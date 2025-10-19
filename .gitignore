@@ -1,8 +1,10 @@
 *.log
 .DS_Store
-.env
-.env.backup
-.env.production
+
+# Ignorar todos los .env excepto el de ejemplo
+.env*
+!.env.example
+
 .phpactor.json
 .phpunit.result.cache
 /.fleet
@@ -16,6 +18,13 @@
 /public/build
 /public/hot
 /public/storage
+
+# Caches y logs de Laravel
+/bootstrap/cache/
+/storage/framework/
+/storage/logs/
+/public/mix-manifest.json
+
 /storage/*.key
 /storage/pail
 /vendor
