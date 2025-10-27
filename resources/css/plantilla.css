@@ -145,6 +145,8 @@ body.site-body{
   width:100%;
   margin-top:auto;
 }
+.footer-inner{ text-align:center; font-size:.95rem; }
+
 html, body {
   height: 100%;
 }
@@ -204,11 +206,3 @@ body.site-body {
 .dropdown a:hover,
 .dropdown button:hover{ background:#f1f5ff; }
 
-/* Footer */
-.site-footer{
-  background:var(--navy-900);
-  color:var(--white);
-  padding:20px 0;
-  border-top:1px solid rgba(255,255,255,.08);
-}
-.footer-inner{ text-align:center; font-size:.95rem; }
