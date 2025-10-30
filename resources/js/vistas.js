@@ -58,3 +58,13 @@ export function initUserMenu() {
     if (e.key === 'Escape') close();
   });
 }
+
+export function initFloatingBtn(options = {}) {
+    const btn = document.getElementById('verProductosBtn');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+        if (options.url) {
+            window.location.href = options.url;
+        }
+    });
+}

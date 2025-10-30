@@ -17,7 +17,7 @@
     <body class="site-body">
         <header class="site-header">
             <div class="container header-inner">
-                <a href="{{ url('/') }}" class="brand">{{ config('app.name', 'Farmacia') }}</a>
+                <span class="brand">{{ config('app.name', 'Farmacia') }}</span> <!-- Solo logo, sin enlace -->
 
                 <div class="header-right">
                     <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false" aria-controls="primaryNav">
@@ -41,7 +41,7 @@
                             </span>
                         </button>
 
-                        <div class="dropdown" id="userDropdown" role="menu">
+                        <div class="dropdown" id="userDropdown">
                             @guest
                                 @if (Route::has('login'))
                                     <a href="{{ route('login') }}">Iniciar sesión</a>

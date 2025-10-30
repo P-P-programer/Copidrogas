@@ -206,3 +206,193 @@ body.site-body {
 .dropdown a:hover,
 .dropdown button:hover{ background:#f1f5ff; }
 
+/* =========================
+   HERO/BANNER PRINCIPAL
+   ========================= */
+.hero-bg {
+  background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+  min-height: 350px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(11,30,58,0.65);
+  z-index: 0;
+}
+.hero-content {
+  position: relative;
+  color: #fff;
+  text-align: center;
+  z-index: 1;
+  animation: fadeInDown 1s cubic-bezier(.4,0,.2,1);
+}
+.hero-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: .5rem;
+  letter-spacing: 1px;
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0,0,0,.18);
+}
+.hero-content p {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 1px 4px rgba(0,0,0,.15);
+}
+
+/* =========================
+   PRODUCTOS DESTACADOS
+   ========================= */
+.productos-destacados h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: .5px;
+}
+.productos-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+.producto-card {
+  background: var(--white);
+  color: #0e1726;
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,.13);
+  margin-bottom: 1rem;
+  width: 220px;
+  text-align: center;
+  transition: transform .18s, box-shadow .18s;
+  animation: fadeInUp .8s cubic-bezier(.4,0,.2,1);
+}
+.producto-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 12px 32px rgba(0,0,0,.18);
+}
+.producto-card img {
+  max-width: 100%;
+  max-height: 120px;
+  margin-bottom: .5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.07);
+}
+.producto-card h3 {
+  margin: .5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.producto-card .precio {
+  color: var(--navy-700);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* =========================
+   SECCIONES INFORMATIVAS
+   ========================= */
+.info-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+.info-card {
+  background: var(--white);
+  color: #0e1726;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.10);
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  max-width: 350px;
+  min-width: 260px;
+  text-align: center;
+  position: relative;
+  animation: fadeInUp .9s cubic-bezier(.4,0,.2,1);
+}
+.info-card .icon {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 1rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e7efff;
+  border-radius: 50%;
+  font-size: 2rem;
+  color: var(--navy-700);
+  box-shadow: 0 2px 8px rgba(0,0,0,.07);
+}
+.info-card h2 {
+  font-size: 1.3rem;
+  margin-bottom: .5rem;
+  font-weight: 700;
+}
+.info-card p, .info-card ul {
+  font-size: 1rem;
+  color: #0e1726;
+  margin: 0 auto;
+  text-align: center;
+}
+.info-card ul {
+  list-style: disc inside;
+  text-align: left;
+  margin-top: .5rem;
+}
+
+/* =========================
+   BOTÓN FLOTANTE
+   ========================= */
+.floating-btn {
+  position: fixed;
+  left: 50%;
+  bottom: 90px;
+  transform: translateX(-50%);
+  background: var(--navy-700);
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 16px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0,0,0,.18);
+  cursor: pointer;
+  z-index: 1000;
+  transition: background .2s, transform .2s;
+  animation: fadeInUp .8s cubic-bezier(.4,0,.2,1);
+}
+.floating-btn:hover {
+  background: var(--navy-900);
+  transform: translateX(-50%) scale(1.06);
+}
+
+/* =========================
+   ANIMACIONES
+   ========================= */
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-40px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width: 900px) {
+  .info-section { flex-direction: column; align-items: center; }
+}
+@media (max-width: 600px) {
+  .floating-btn { padding: 12px 20px; font-size: 1rem; }
+  .info-card { padding: 1.2rem .7rem 1rem .7rem; }
+}
+
