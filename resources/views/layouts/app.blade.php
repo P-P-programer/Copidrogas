@@ -30,6 +30,12 @@
                         <a href="{{ url('/contacto') }}">Contacto</a>
                     </nav>
 
+                    <a href="{{ route('cart.index') }}" class="cart-btn" id="cartBtn" aria-label="Carrito">
+                        🛒
+                        @php $cartCount = session('cart.count', 0); @endphp
+                        <span id="cartCount" class="cart-badge">{{ $cartCount }}</span>
+                    </a>
+
                     <div class="user-menu">
                         <button class="avatar-btn" id="userMenuBtn" aria-haspopup="menu" aria-expanded="false">
                             <span class="avatar">
@@ -40,7 +46,6 @@
                                 @endauth
                             </span>
                         </button>
-
                         <div class="dropdown" id="userDropdown">
                             @guest
                                 @if (Route::has('login'))

@@ -19,15 +19,15 @@
 
 <section class="container productos-destacados">
     <h2>Productos destacados</h2>
-    <div class="productos-grid">
+    <div class="productos-destacados-grid">
         @php
             $featured = \App\Models\Product::take(6)->get();
         @endphp
         @foreach($featured as $i => $product)
-            <div class="card producto-card" style="animation-delay: {{ $i * 0.12 }}s;">
-                <img src="{{ asset('img/' . ($product->image ?? 'default.png')) }}" alt="{{ $product->name }}">
+            <div class="card producto-destacado-card" style="animation-delay: {{ $i * 0.12 }}s;">
+                <img src="{{ asset('img/' . ($product->image ?? 'default.png')) }}" alt="">
                 <h3>{{ $product->name }}</h3>
-                <h3 class="precio">${{ number_format($product->price, 0, ',', '.') }} COP</h3>
+                <div class="precio">${{ number_format($product->price, 0, ',', '.') }} COP</div>
             </div>
         @endforeach
     </div>
@@ -57,7 +57,6 @@
         </ul>
     </div>
 </section>
-
 @if(auth()->check())
     <button id="verProductosBtn" class="floating-btn">
         Ver productos
@@ -71,16 +70,3 @@
 <div style="height: 120px;"></div> <!-- Espacio extra para el botón flotante -->
 
 @endsection
-
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/plantilla.css') }}">
-@endpush
-
-@push('scripts')
-<script type="module">
-import { initFloatingBtn } from '/js/vistas.js';
-initFloatingBtn({ 
-    url: '{{ auth()->check() ? route('products.index') : route('login') }}'
-});
-</script>
-@endpush

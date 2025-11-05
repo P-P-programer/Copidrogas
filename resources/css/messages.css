@@ -1,0 +1,72 @@
+/* Contenedor de toasts (centrado inferior) */
+.ux-toast-container {
+  position: fixed;
+  left: 50%;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: grid;
+  gap: .5rem;
+  z-index: 1200;
+  width: min(92vw, 520px);
+  pointer-events: none;
+}
+
+/* Toast */
+.ux-toast {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: .75rem;
+  padding: .75rem 1rem;
+  border-radius: 10px;
+  color: #0f172a;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(0,0,0,.25);
+  animation: ux-toast-in .22s ease-out;
+  border: 1px solid #e5e7eb;
+  font-size: .95rem;
+}
+.ux-toast .ux-toast-icon { font-size: 1.1rem; }
+.ux-toast .ux-toast-close {
+  background: transparent; border: 0; cursor: pointer; color: #334155; font-size: 1rem;
+}
+
+/* Variantes */
+.ux-toast--success { border-color:#22c55e33; background:#f0fdf4; color:#14532d; }
+.ux-toast--error   { border-color:#ef444433; background:#fef2f2; color:#7f1d1d; }
+.ux-toast--info    { border-color:#3b82f633; background:#eff6ff; color:#0b1e3a; }
+.ux-toast--warn    { border-color:#f59e0b33; background:#fffbeb; color:#713f12; }
+
+@keyframes ux-toast-in {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* Overlay confirm */
+.ux-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45);
+  display: grid; place-items: center; z-index: 1300;
+}
+
+/* Diálogo confirmación */
+.ux-dialog {
+  width: min(92vw, 520px);
+  background: #fff; color:#0f172a;
+  border-radius: 14px; padding: 1rem 1rem 0.875rem;
+  box-shadow: 0 12px 32px rgba(0,0,0,.35);
+}
+.ux-dialog h3 {
+  margin: 0 0 .25rem; font-size: 1.1rem; font-weight: 700; color:#0b1e3a;
+}
+.ux-dialog p { margin: 0.25rem 0 0; color:#334155; line-height: 1.45; }
+.ux-dialog .ux-dialog-actions {
+  display:flex; justify-content:flex-end; gap:.5rem; margin-top:1rem;
+}
+.ux-btn {
+  padding:.5rem .85rem; border-radius:10px; border:1px solid #e5e7eb; background:#fff; cursor:pointer;
+}
+.ux-btn--primary {
+  background:#1a4175; color:#fff; border-color:#1a4175;
+}
+.ux-btn:focus { outline: 2px solid #1a4175; outline-offset: 2px; }
