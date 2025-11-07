@@ -540,27 +540,6 @@ body, html {
     bottom: calc(clamp(3.5rem, 8vw, 6rem) + env(safe-area-inset-bottom));
   }
 }
-.cart-btn{
-  position: relative;
-  color: var(--white);
-  text-decoration: none;
-  font-size: 1.1rem;
-  padding: .25rem .5rem;
-  border-radius: 8px;
-}
-.cart-btn:hover{ background: rgba(255,255,255,.08); }
-.cart-badge{
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: #ef4444;
-  color: #fff;
-  border-radius: 9999px;
-  font-size: .7rem;
-  padding: 2px 6px;
-  min-width: 18px;
-  text-align: center;
-}
 
 /* Controles cantidad en modal */
 .qty-controls{
@@ -700,3 +679,70 @@ body, html {
   }
 }
 
+/* ===== Modal producto ===== */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,.5);
+  display:flex; align-items:center; justify-content:center; z-index:1200;
+}
+.modal-dialog{
+  background:#fff; color:#0e1726; border-radius:12px;
+  padding:1rem; width:min(95vw, 700px); max-height:90vh; overflow:auto;
+  position:relative; box-shadow:0 12px 32px rgba(0,0,0,.35);
+}
+.modal-close{
+  position:absolute; right:.5rem; top:.5rem;
+  background:transparent; border:0; font-size:1.5rem; line-height:1; cursor:pointer;
+}
+.modal-body{
+  display:flex; gap:1rem; flex-wrap:wrap;
+}
+.modal-media{ flex:1; min-width:180px; }
+.modal-image{ max-width:100%; border-radius:8px; display:block; }
+.modal-info{ flex:1.5; min-width:240px; }
+.modal-info .muted{ color:#6b7280; margin:.25rem 0; }
+.modal-info .price{ color:var(--navy-700); font-weight:700; }
+
+/* Controles de cantidad dentro del modal */
+#qtyBox{ margin-top:1rem; }
+#qtyBox .qty-controls{
+  display:flex; align-items:center; gap:.5rem; margin-top:.75rem;
+}
+#qtyBox .qty-controls button{
+  width:40px; height:40px; border-radius:8px; border:1px solid #e2e8f0; background:#fff; cursor:pointer;
+}
+#qtyBox .qty-controls input{
+  width:80px; text-align:center; padding:.4rem .5rem; border-radius:8px; border:1px solid #e2e8f0;
+}
+#qtyBox .qty-total{ margin-top:.5rem; font-weight:700; color:var(--navy-700); }
+#qtyBox .qty-actions{
+  display:flex; gap:.5rem; margin-top:.75rem;
+}
+
+/* Móvil: el diálogo ocupa la pantalla; botones sticky para no perderlos */
+@media (max-width: 640px){
+  .modal-dialog{
+    width:100vw;
+    height:100dvh;             /* mejor que 100vh en móviles */
+    max-height:100dvh;
+    border-radius:0;
+    padding:1rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+  #qtyBox .qty-actions{
+    position:sticky; bottom:0; left:0; right:0;
+    background:#fff;
+    padding:.75rem 0 calc(.25rem + env(safe-area-inset-bottom));
+    border-top:1px solid #e5e7eb;
+    gap:.5rem;
+  }
+  #qtyBox .qty-actions .confirm,
+  #qtyBox .qty-actions .cancel{ flex:1; }
+}
+
+/* Botón confirmar/cancelar consistentes */
+.confirm{
+  padding:.6rem .9rem; border:0; border-radius:8px; background:var(--navy-700); color:#fff; cursor:pointer;
+}
+.cancel{
+  padding:.6rem .9rem; border:1px solid #e2e8f0; border-radius:8px; background:#fff; color:#0e1726; cursor:pointer;
+}

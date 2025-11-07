@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CartItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -9,7 +10,20 @@ class CartController extends Controller
 {
     public function index()
     {
-        $cart = session('cart', ['items' => [], 'count' => 0, 'total' => 0]);
+        $items = auth()->user()->load('cartItems.product')->cartItems;
+        
+        $cart = [
+            'items' => $items->map(fn($ci) => [
+                'id' => $ci->product_id,
+                'name' => $ci->product->name,
+                'price' => (float)$ci->product->price,
+                'image' => $ci->product->image,
+                'qty' => $ci->qty,
+            ])->toArray(),
+            'count' => $items->sum('qty'),
+            'total' => $items->sum(fn($ci) => $ci->qty * $ci->product->price),
+        ];
+
         return view('cart.index', compact('cart'));
     }
 
@@ -20,40 +34,14 @@ class CartController extends Controller
             'qty' => ['required','integer','min:1','max:1000'],
         ]);
 
-        $product = Product::findOrFail($validated['product_id']);
+        $cartItem = CartItem::updateOrCreate(
+            ['user_id' => auth()->id(), 'product_id' => $validated['product_id']],
+            ['qty' => \DB::raw("qty + {$validated['qty']}")]
+        );
 
-        $cart = session('cart', ['items' => [], 'count' => 0, 'total' => 0]);
-        $items = $cart['items'];
+        $cart = $this->getCartData();
 
-        if (isset($items[$product->id])) {
-            $items[$product->id]['qty'] += $validated['qty'];
-        } else {
-            $items[$product->id] = [
-                'id' => $product->id,
-                'name' => $product->name,
-                'price' => (float)$product->price,
-                'image' => $product->image,
-                'qty' => $validated['qty'],
-            ];
-        }
-
-        // Recalcular totales
-        $count = 0; $total = 0;
-        foreach ($items as $it) {
-            $count += $it['qty'];
-            $total += $it['price'] * $it['qty'];
-        }
-        $cart = ['items' => $items, 'count' => $count, 'total' => $total];
-        session(['cart' => $cart]);
-
-        return response()->json([
-            'ok' => true,
-            'cart' => [
-                'count' => $count,
-                'total' => $total,
-                'items' => $items,
-            ]
-        ]);
+        return response()->json(['ok' => true, 'cart' => $cart]);
     }
 
     public function update(Request $request)
@@ -63,65 +51,50 @@ class CartController extends Controller
             'qty' => ['required','integer','min:1','max:1000'],
         ]);
 
-        $cart = session('cart', ['items' => [], 'count' => 0, 'total' => 0]);
-        if (!isset($cart['items'][$validated['product_id']])) {
-            if ($request->wantsJson()) {
-                return response()->json(['ok' => false, 'message' => 'Producto no está en el carrito'], 404);
-            }
-            return back()->with('error', 'Producto no está en el carrito');
+        $cartItem = CartItem::where('user_id', auth()->id())
+            ->where('product_id', $validated['product_id'])
+            ->first();
+
+        if (!$cartItem) {
+            return response()->json(['ok' => false, 'message' => 'Producto no está en el carrito'], 404);
         }
 
-        $cart['items'][$validated['product_id']]['qty'] = $validated['qty'];
+        $cartItem->update(['qty' => $validated['qty']]);
 
-        $count = 0; $total = 0;
-        foreach ($cart['items'] as $it) {
-            $count += $it['qty'];
-            $total += $it['price'] * $it['qty'];
-        }
-        $cart['count'] = $count;
-        $cart['total'] = $total;
-        session(['cart' => $cart]);
+        $cart = $this->getCartData();
 
-        if ($request->wantsJson()) {
-            return response()->json([
-                'ok' => true,
-                'cart' => [
-                    'count' => $count,
-                    'total' => $total,
-                    'items' => $cart['items']
-                ]
-            ]);
-        }
-
-        return back()->with('success', 'Cantidad actualizada');
+        return response()->json(['ok' => true, 'cart' => $cart]);
     }
 
     public function remove(Product $product)
     {
-        $cart = session('cart', ['items' => [], 'count' => 0, 'total' => 0]);
-        unset($cart['items'][$product->id]);
+        CartItem::where('user_id', auth()->id())
+            ->where('product_id', $product->id)
+            ->delete();
 
-        $count = 0; $total = 0;
-        foreach ($cart['items'] as $it) {
-            $count += $it['qty'];
-            $total += $it['price'] * $it['qty'];
-        }
-        $cart['count'] = $count;
-        $cart['total'] = $total;
-
-        session(['cart' => $cart]);
+        $cart = $this->getCartData();
 
         if (request()->wantsJson()) {
-            return response()->json([
-                'ok' => true,
-                'cart' => [
-                    'count' => $count,
-                    'total' => $total,
-                    'items' => $cart['items']
-                ]
-            ]);
+            return response()->json(['ok' => true, 'cart' => $cart]);
         }
 
         return back()->with('success', 'Producto eliminado del carrito');
+    }
+
+    private function getCartData()
+    {
+        $items = auth()->user()->load('cartItems.product')->cartItems;
+
+        return [
+            'count' => $items->sum('qty'),
+            'total' => $items->sum(fn($ci) => $ci->qty * $ci->product->price),
+            'items' => $items->map(fn($ci) => [
+                'id' => $ci->product_id,
+                'name' => $ci->product->name,
+                'price' => (float)$ci->product->price,
+                'image' => $ci->product->image,
+                'qty' => $ci->qty,
+            ])->toArray(),
+        ];
     }
 }

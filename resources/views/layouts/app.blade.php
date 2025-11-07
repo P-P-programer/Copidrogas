@@ -14,7 +14,7 @@
         <!-- Vite: CSS y JS -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="site-body">
+    <body class="site-body" data-auth="{{ auth()->check() ? '1' : '0' }}">
         <header class="site-header">
             <div class="container header-inner">
                 <span class="brand">{{ config('app.name', 'Farmacia') }}</span> <!-- Solo logo, sin enlace -->
@@ -31,9 +31,13 @@
                     </nav>
 
                     <a href="{{ route('cart.index') }}" class="cart-btn" id="cartBtn" aria-label="Carrito">
-                        🛒
-                        @php $cartCount = session('cart.count', 0); @endphp
-                        <span id="cartCount" class="cart-badge">{{ $cartCount }}</span>
+                        <i class="bi bi-cart-fill cart-icon" aria-hidden="true"></i>
+                        @auth
+                            @php $cartCount = auth()->user()->cartItems()->sum('qty'); @endphp
+                            <span id="cartCount" class="cart-badge">{{ $cartCount }}</span>
+                        @else
+                            <span id="cartCount" class="cart-badge">0</span>
+                        @endauth
                     </a>
 
                     <div class="user-menu">

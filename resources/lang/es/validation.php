@@ -111,6 +111,11 @@ return [
     'confirmed' => 'La confirmación de :attribute no coincide.',
     'current_password' => 'La contraseña es incorrecta.',
 
+    // Mensajes de autenticación (antes en auth.php)
+    'auth_failed' => 'Credenciales incorrectas.',
+    'auth_password' => 'La contraseña es incorrecta.',
+    'auth_throttle' => 'Demasiados intentos. Inténtalo de nuevo en :seconds segundos.',
+
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines
@@ -139,5 +144,9 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'email' => 'correo electrónico',
+        'password' => 'contraseña',
+        'name' => 'nombre',
+    ],
 ];

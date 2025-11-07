@@ -34,24 +34,30 @@
     </main>
 </div>
 
-<!-- Modal simple de detalle -->
-<div id="productModal" hidden style="position:fixed; inset:0; background:rgba(0,0,0,.5); align-items:center; justify-content:center; z-index:1200;">
-    <div style="background:#fff; color:#0e1726; border-radius:12px; padding:1.25rem; max-width:700px; width:95%;">
-        <button id="modalClose" style="float:right;background:none;border:0;font-weight:700;">×</button>
-        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
-            <div style="flex:1; min-width:180px;"><img id="modalImage" src="" alt="" style="max-width:100%; border-radius:8px;"></div>
-            <div style="flex:1.5;">
-                <h3 id="modalName"></h3>
-                <p id="modalCategory" style="color:#6b7280;"></p>
-                <p id="modalPrice" style="font-weight:700;color:var(--navy-700);"></p>
-                <p id="modalStock"></p>
-                <p id="modalDescription"></p>
-                <div style="margin-top:1rem;">
-                    <button id="modalAddCart" style="padding:.6rem .9rem;border-radius:8px;border:0;background:var(--navy-700);color:#fff;cursor:pointer;">Agregar al carrito</button>
-                </div>
-            </div>
+<!-- Modal de detalle -->
+<div id="productModal" class="modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="modalName">
+  <div class="modal-dialog">
+    <button id="modalClose" class="modal-close" aria-label="Cerrar">×</button>
+    <div class="modal-body">
+      <div class="modal-media">
+        <img id="modalImage" src="" alt="" class="modal-image">
+      </div>
+      <div class="modal-info">
+        <h3 id="modalName"></h3>
+        <p id="modalCategory" class="muted"></p>
+        <p id="modalPrice" class="price"></p>
+        <p id="modalStock"></p>
+        <p id="modalDescription"></p>
+
+        <div class="modal-actions">
+          <button id="modalAddCart" class="confirm">Agregar al carrito</button>
         </div>
+
+        <!-- Contenedor para controles de cantidad (se llena por JS) -->
+        <div id="qtyBox"></div>
+      </div>
     </div>
+  </div>
 </div>
 <div style="height:140px;"></div>
 @endsection
