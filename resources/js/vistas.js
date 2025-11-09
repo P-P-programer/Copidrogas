@@ -20,7 +20,7 @@ export function initCartPage() {
  * Inicializa formularios de actualización de cantidad
  */
 function initCartUpdateForms() {
-  const forms = document.querySelectorAll('form[action*="/carrito/update"]');
+  const forms = document.querySelectorAll('form[action*="/cart/"]');
   forms.forEach(setupUpdateForm);
 }
 
@@ -83,32 +83,25 @@ function validateQuantityUpdate(newQty, originalQty) {
   return { valid: true };
 }
 
-async function updateCartQuantity(productId, qty, updateBtn) {
+// Ajuste: usar PATCH /cart/{id} para actualizar cantidad
+async function updateCartQuantity(productId, qty, btn) {
   toast({ type: 'info', message: 'Actualizando carrito...' });
-
   try {
-    const response = await fetchCartUpdate(productId, qty);
-
-    if (response.ok) {
-      updateCartBadge(response.cart.count);
-      updateCartTotal(response.cart.total);
+    const res = await fetch(`/cart/${productId}`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ product_id: productId, qty })
+    });
+    const json = await res.json();
+    if (res.ok && json.ok) {
+      updateCartBadge(json.cart.count);
+      updateCartTotal(json.cart.total);
+      setButtonState(btn, false);
       toast({ type: 'success', message: 'Cantidad actualizada.' });
-      setButtonState(updateBtn, false);
     } else {
-      toast({ type: 'error', message: response.message || 'No se pudo actualizar.' });
+      toast({ type: 'error', message: json.message || 'No se pudo actualizar.' });
     }
-  } catch (e) {
-    handleFetchError(e, 'actualizar carrito');
-  }
-}
-
-async function fetchCartUpdate(productId, qty) {
-  const res = await fetch('/carrito/update', {
-    method: 'POST',
-    headers: getAuthHeaders(),
-    body: JSON.stringify({ product_id: productId, qty })
-  });
-  return await res.json();
+  } catch (e) { handleFetchError(e, 'actualizar carrito'); }
 }
 
 // ============================================================================
@@ -128,12 +121,11 @@ function isCartDeleteForm(form) {
   const hasDeleteMethod = form.querySelector('input[name="_method"][value="DELETE"]');
   const deleteBtn = form.querySelector('button.cancel');
   const actionUrl = form.getAttribute('action');
-
-  return hasDeleteMethod && 
-         deleteBtn && 
-         actionUrl && 
-         actionUrl.includes('/carrito/') && 
-         !actionUrl.includes('/update');
+  return hasDeleteMethod &&
+         deleteBtn &&
+         actionUrl &&
+         actionUrl.includes('/cart/') &&
+         !actionUrl.includes('/checkout');
 }
 
 function setupDeleteForm(form) {
@@ -165,8 +157,7 @@ function extractDeleteFormData(form) {
 function extractProductId(form, actionUrl) {
   const dataId = form.closest('[data-product-name]')?.dataset.productId;
   if (dataId) return dataId;
-
-  const matches = actionUrl.match(/\/carrito\/(\d+)/);
+  const matches = actionUrl.match(/\/cart\/(\d+)/);
   return matches ? matches[1] : null;
 }
 
@@ -198,11 +189,10 @@ async function deleteCartItem(productId, form) {
 }
 
 async function fetchCartDelete(productId) {
-  const res = await fetch(`/carrito/${productId}`, {
+  const res = await fetch(`/cart/${productId}`, {
     method: 'DELETE',
     headers: getAuthHeaders()
   });
-
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return await res.json();
 }
@@ -668,25 +658,22 @@ async function confirmAddToCart(productId, qty, price) {
 
 async function addToCart(productId, qty) {
   try {
-    const res = await fetch('/carrito/add', {
+    const res = await fetch('/cart/add', {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify({ product_id: productId, qty })
     });
-
     if (res.status === 401) {
       handleUnauthorized();
       return;
     }
-
     const json = await res.json();
-
     if (json.ok) {
       updateCartBadge(json.cart.count);
       document.getElementById('qtyBox')?.remove();
       toast({ type: 'success', message: 'Producto agregado al carrito.' });
     } else {
-      toast({ type: 'error', message: 'No se pudo agregar al carrito.' });
+      toast({ type: 'error', message: json.message || 'No se pudo agregar al carrito.' });
     }
   } catch (e) {
     handleFetchError(e, 'agregar al carrito');
@@ -781,4 +768,88 @@ function formatCOP(n) {
 function handleFetchError(error, context) {
   console.error(`Error al ${context}:`, error);
   toast({ type: 'error', message: `Error al ${context}.` });
+}
+
+// ============================================================================
+// CHECKOUT - AJAX
+// ============================================================================
+
+export function initCheckoutAjax() {
+  const form = document.getElementById('checkoutForm');
+  if (!form) return;
+
+  const submitBtn = form.querySelector('button.confirm');
+  let sending = false;
+
+  form.addEventListener('submit', async (e) => {
+    if (!form.dataset.ajax) return; // permite desactivar si se desea
+    e.preventDefault();
+    if (sending) return;
+
+    sending = true;
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Enviando...';
+    submitBtn.disabled = true;
+
+    const fd = new FormData(form);
+    const payload = Object.fromEntries(fd.entries());
+    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-TOKEN': token ?? ''
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.status === 409) {
+        toast({ type: 'error', message: 'Stock insuficiente en algún producto. Actualiza tu carrito.' });
+        reset();
+        return;
+      }
+
+      if (!res.ok) {
+        // Intentar mostrar errores de validación
+        let msg = 'Error al crear el pedido.';
+        try {
+          const err = await res.json();
+          if (err.message) msg = err.message;
+          if (err.errors) {
+            const first = Object.values(err.errors)[0]?.[0];
+            if (first) msg = first;
+          }
+        } catch {}
+        toast({ type: 'error', message: msg });
+        reset();
+        return;
+      }
+
+      const json = await res.json();
+      if (json.ok) {
+        toast({ type: 'success', message: json.message || 'Pedido creado.' });
+        toast({ type: 'info', message: 'Redirigiendo…' });
+        setTimeout(() => {
+          window.location.href = json.redirect;
+        }, 1000);
+      } else {
+        toast({ type: 'error', message: json.message || 'No se pudo crear el pedido.' });
+        reset();
+      }
+    } catch (err) {
+      console.error(err);
+      toast({ type: 'error', message: 'Error de red.' });
+      reset();
+    }
+
+    function reset() {
+      sending = false;
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+    }
+  });
 }

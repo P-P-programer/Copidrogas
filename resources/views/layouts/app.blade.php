@@ -17,7 +17,7 @@
     <body class="site-body" data-auth="{{ auth()->check() ? '1' : '0' }}">
         <header class="site-header">
             <div class="container header-inner">
-                <span class="brand">{{ config('app.name', 'Farmacia') }}</span> <!-- Solo logo, sin enlace -->
+                <span class="brand">{{ config('app.name', 'Farmacia') }}</span>
 
                 <div class="header-right">
                     <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false" aria-controls="primaryNav">
@@ -67,13 +67,36 @@
                                 <div class="user-info">
                                     <div class="name">{{ auth()->user()->name }}</div>
                                     <div class="email">{{ auth()->user()->email }}</div>
+                                    @if(auth()->user()->role)
+                                        <span class="role-badge {{ auth()->user()->role->badge_class }}">
+                                            {{ auth()->user()->role->display_name }}
+                                        </span>
+                                    @endif
                                 </div>
-                                @if (Route::has('profile.edit'))
-                                    <a href="{{ route('profile.edit') }}">Mi perfil</a>
-                                @endif
+
+                                {{-- Analítica: SOLO Super Admin --}}
+                                @can('view-analytics')
+                                    <a href="{{ route('analytics.index') }}">Analítica</a>
+                                @endcan
+
+                                {{-- Gestionar Stock: Super Admin, Admin, Proveedor --}}
+                                @can('manage-products')
+                                    <a href="{{ route('stock.index') }}">Gestionar Stock</a>
+                                @endcan
+
+                                {{-- Gestionar usuarios: Admin y Super Admin --}}
+                                @can('manage-users')
+                                    <a href="{{ route('users.index') }}">Gestionar usuarios</a>
+                                @endcan
+
+                                {{-- Mis pedidos: Todos los usuarios autenticados --}}
                                 @if (Route::has('orders.index'))
                                     <a href="{{ route('orders.index') }}">Mis pedidos</a>
                                 @endif
+                                
+                                <a href="{{ route('profile.edit') }}">Mi perfil</a>
+
+                                {{-- Cerrar sesión --}}
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit" class="logout">Cerrar sesión</button>

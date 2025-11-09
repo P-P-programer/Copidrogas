@@ -1,0 +1,255 @@
+/* =========================
+   ANALYTICS / GRÁFICAS
+   ========================= */
+
+.analytics-section { 
+  display: grid; 
+  gap: 1rem; 
+}
+
+.analytics-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+  gap: 1.5rem; 
+}
+
+.chart-card {
+  position: relative;
+}
+
+.chart-card h3 { 
+  margin: 0 0 .75rem; 
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--navy-900);
+}
+
+.chart-container { 
+  position: relative; 
+  height: 280px; 
+  width: 100%;
+  min-height: 180px;
+}
+
+/* Loader para gráficas */
+.chart-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .analytics-grid { 
+    grid-template-columns: 1fr; 
+    gap: 1rem; 
+  }
+  
+  .chart-container { 
+    height: 220px;
+  }
+  
+  .chart-card h3 {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-container { 
+    height: 180px; 
+  }
+  
+  .analytics-section {
+    gap: 0.75rem;
+  }
+}
+
+/* Mejora accesibilidad: foco en canvas */
+canvas:focus {
+  outline: 2px solid var(--navy-700);
+  outline-offset: 2px;
+}
+
+/* =========================
+   PANEL DE ACTIVIDAD (Super Admin)
+   ========================= */
+.activity-panel {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e5e7eb;
+}
+
+.activity-table-wrapper {
+  overflow-x: auto;
+  margin-top: 0.75rem;
+}
+
+.activity-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.activity-table th,
+.activity-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.activity-table thead th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: var(--navy-900);
+  white-space: nowrap;
+}
+
+.activity-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* Badges de rol */
+.role-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 8px;
+  text-transform: capitalize;
+}
+
+.role-1 { background: #fef3c7; color: #92400e; } /* super_admin */
+.role-2 { background: #dbeafe; color: #1e40af; } /* admin */
+.role-3 { background: #e0e7ff; color: #3730a3; } /* proveedor */
+.role-4 { background: #f3f4f6; color: #374151; } /* usuario */
+
+/* Indicadores de stock */
+.stock-indicator {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+.stock-indicator.low { background: #fee2e2; color: #991b1b; }
+.stock-indicator.medium { background: #fef3c7; color: #92400e; }
+.stock-indicator.high { background: #d1fae5; color: #065f46; }
+/* Responsive tabla actividad */
+
+@media (max-width: 768px) {
+  .activity-table {
+    font-size: 0.85rem;
+  }
+  
+  .activity-table th,
+  .activity-table td {
+    padding: 0.5rem;
+  }
+}
+
+/* =========================
+   Responsive móvil avanzado
+   ========================= */
+@media (max-width: 640px) {
+  .analytics-section {
+    gap: 1.25rem;
+    padding-left: .5rem;
+    padding-right: .5rem;
+  }
+
+  .analytics-grid {
+    gap: 1.25rem;
+  }
+
+  .chart-container {
+    height: 200px;
+    min-height: 160px;
+  }
+
+  .activity-panel {
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  /* Tabla → tarjetas apiladas */
+  .activity-table thead {
+    display: none;
+  }
+
+  .activity-table,
+  .activity-table tbody,
+  .activity-table tr,
+  .activity-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .activity-table {
+    font-size: 0.85rem;
+  }
+
+  .activity-table tr {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0.6rem 0.75rem;
+    margin: 0 0 0.9rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  .activity-table td {
+    border-bottom: none;
+    padding: 0.4rem 0 !important;
+  }
+
+  .activity-table td:last-child {
+    padding-bottom: 0;
+  }
+
+  .activity-table td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.58rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: #6b7280;
+    margin-bottom: 2px;
+  }
+
+  /* Ajustes visuales de badges dentro de tarjetas */
+  .role-badge {
+    font-size: 0.65rem;
+    margin-top: 0.25rem;
+  }
+
+  .badge {
+    font-size: 0.62rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+  }
+
+  .stock-indicator {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.45rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .chart-container {
+    height: 170px;
+    min-height: 140px;
+  }
+  .activity-table tr {
+    padding: 0.55rem 0.65rem;
+  }
+  .activity-table td {
+    padding: 0.35rem 0 !important;
+  }
+}

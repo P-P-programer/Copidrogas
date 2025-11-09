@@ -35,6 +35,12 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+
+        if (!Schema::hasColumn('users', 'status')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->boolean('status')->default(true)->after('role_id'); // tinyint(1)
+            });
+        }
     }
 
     /**

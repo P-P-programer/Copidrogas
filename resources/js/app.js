@@ -1,122 +1,106 @@
 import './bootstrap';
 import Alpine from 'alpinejs';
+
 import { mountUX, toast } from './ux/messages';
-import { initHamburgerMenu, initUserMenu, initFloatingBtn, initProductsPage, initCartPage, initIdleLogout } from './vistas.js';
+import { 
+  initHamburgerMenu, 
+  initUserMenu, 
+  initFloatingBtn, 
+  initProductsPage, 
+  initCartPage, 
+  initIdleLogout, 
+  initCheckoutAjax 
+} from './vistas.js';
+
 import '../css/messages.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import '../css/analytics.css';
+import '../css/dashboard.css';
 
 window.Alpine = Alpine;
 Alpine.start();
 
-document.addEventListener('DOMContentLoaded', () => {
+/**
+ * Punto de arranque global de la aplicación.
+ * Orquesta inicialización de:
+ * - Sistema de mensajes/toasts
+ * - Componentes globales de navegación y UI
+ * - Funcionalidades específicas por página
+ * - Sistema de cierre por inactividad
+ * - Flash de pedidos (feedback post-checkout)
+ */
+function bootstrap() {
   mountUX();
-  
-  // Inicializar componentes globales
-  initGlobalComponents();
-  
-  // Manejar eventos de autenticación
-  handleAuthEvents();
-  
-  // Inicializar páginas específicas
-  initPageSpecificFeatures();
-  
-  // Sistema de inactividad para usuarios autenticados
-  initIdleLogoutIfAuthenticated();
-});
+  initGlobals();
+  initPage();
+  initIdle();
+  handleOrderFlash();
+}
 
 /**
- * Inicializa componentes globales del layout
+ * Inicializa elementos presentes en casi todas las vistas:
+ * - Menú hamburguesa (móvil)
+ * - Menú de usuario (dropdown)
+ * - Botón flotante (scroll / acceso rápido)
  */
-function initGlobalComponents() {
+function initGlobals() {
   initHamburgerMenu();
   initUserMenu();
   initFloatingBtn({ url: '/productos' });
 }
 
 /**
- * Maneja eventos relacionados con autenticación
+ * Detecta qué bloques específicos existen en el DOM
+ * y dispara su inicialización:
+ * - Grid de productos (carga dinámica / modal)
+ * - Página del carrito (eliminar ítems)
+ * - Checkout AJAX (envío sin recarga)
  */
-function handleAuthEvents() {
-  const handlers = [
-    handleLogoutToast,
-    handleAuthFlashMessages,
-    handlePostLoginRedirect
-  ];
-  
-  handlers.forEach(handler => handler());
-}
-
-/**
- * Muestra toast cuando el usuario cierra sesión
- */
-function handleLogoutToast() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('logged_out') === '1') {
-    toast({ type: 'info', message: 'Has cerrado sesión.' });
+function initPage() {
+  if (document.querySelector('#productosGrid')) {
+    initProductsPage({ dataUrl: '/productos/data', productUrl: '/productos' });
+  }
+  if (document.querySelector('.cart-page')) {
+    initCartPage();
+  }
+  if (document.querySelector('#checkoutForm')) {
+    initCheckoutAjax();
+  }
+  if (document.querySelector('#stockGrid')) {
+    import('./stock.js');
+  }
+  // Gestión de usuarios (carga diferida)
+  if (document.querySelector('#usersTable')) {
+    import('./users.js');
   }
 }
 
 /**
- * Muestra toasts de errores o mensajes de sesión
+ * Activa el sistema de cierre de sesión por inactividad
+ * solo si el usuario está autenticado.
+ * - timeoutMs: tiempo total de inactividad permitido
+ * - warnMs: aviso antes del cierre
  */
-function handleAuthFlashMessages() {
-  const flash = document.getElementById('authFlash');
-  if (!flash) return;
-  
-  const error = flash.dataset.error?.trim();
-  const status = flash.dataset.status?.trim();
-  
-  if (error) toast({ type: 'error', message: error, timeout: 5000 });
-  if (status) toast({ type: 'info', message: status });
-}
-
-/**
- * Redirige al usuario después del login si viene de una ruta protegida
- */
-function handlePostLoginRedirect() {
-  const postLogin = document.getElementById('postLogin');
-  if (!postLogin?.dataset.redirect) return;
-  
-  const targetUrl = postLogin.dataset.redirect;
-  
-  toast({ type: 'success', message: 'Inicio de sesión correcto.' });
-  toast({ type: 'info', message: 'Redirigiendo…' });
-  
-  setTimeout(() => {
-    window.location.href = targetUrl;
-  }, 1400);
-}
-
-/**
- * Inicializa funcionalidades específicas según la página
- */
-function initPageSpecificFeatures() {
-  const pageInitializers = [
-    { 
-      selector: '#productosGrid', 
-      init: () => initProductsPage({ dataUrl: '/productos/data', productUrl: '/productos' })
-    },
-    { 
-      selector: '.cart-page', 
-      init: initCartPage 
-    }
-  ];
-  
-  pageInitializers.forEach(({ selector, init }) => {
-    if (document.querySelector(selector)) {
-      init();
-    }
-  });
-}
-
-/**
- * Activa el sistema de cierre por inactividad si el usuario está autenticado
- */
-function initIdleLogoutIfAuthenticated() {
+function initIdle() {
   if (document.body.dataset.auth === '1') {
-    initIdleLogout({ 
-      timeoutMs: 10 * 60 * 1000,  // 10 minutos
-      warnMs: 60 * 1000            // Aviso 60s antes
-    });
+    initIdleLogout({ timeoutMs: 10 * 60 * 1000, warnMs: 60 * 1000 });
   }
+}
+
+/**
+ * Muestra toast posterior a creación de pedido
+ * usando el flash de sesión inyectado en la vista.
+ */
+function handleOrderFlash() {
+  const el = document.getElementById('orderFlash');
+  if (!el) return;
+  const msg = el.dataset.status?.trim();
+  if (msg) toast({ type: 'success', message: msg });
+}
+
+// Ejecutar bootstrap según estado del documento
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootstrap);
+} else {
+  bootstrap();
 }
