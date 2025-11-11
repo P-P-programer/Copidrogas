@@ -7,7 +7,7 @@
     ['label' => 'Inicio', 'url' => url('/')],
 ]])
 
-<div class="hero-bg">
+<div class="hero-bg" style="background-image: url('{{ asset('img/cliente-femenino-que-realiza-el-pago-con-tarjeta-de-credito-sin-contacto.webp') }}');">
     <div class="hero-content">
         <h1>Bienvenido a Farmacia</h1>
         <p>

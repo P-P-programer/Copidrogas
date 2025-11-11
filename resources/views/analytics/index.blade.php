@@ -28,7 +28,7 @@
   </div>
 
   {{-- Panel de actividad exclusivo para Super Admin --}}
-  @can('view-activity')
+  @if(auth()->user()->role_id === 4)
     <div class="activity-panel">
       <h2 style="margin:2rem 0 1rem;">Panel de actividad (Super Admin)</h2>
       
@@ -139,7 +139,7 @@
         @endif
       </div>
     </div>
-  @endcan
+  @endif
 </section>
 
 @vite('resources/js/analytics.js')

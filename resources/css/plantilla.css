@@ -212,13 +212,18 @@ body.site-body {
    HERO/BANNER PRINCIPAL
    ========================= */
 .hero-bg {
-  background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
   min-height: 350px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 .hero-bg::before {
   content: '';
@@ -233,6 +238,8 @@ body.site-body {
   text-align: center;
   z-index: 1;
   animation: fadeInDown 1s cubic-bezier(.4,0,.2,1);
+  max-width: 1100px;
+  padding: 0 1rem;
 }
 .hero-content h1 {
   font-size: 2.5rem;
@@ -245,6 +252,34 @@ body.site-body {
   font-size: 1.2rem;
   margin-bottom: 1.5rem;
   text-shadow: 0 1px 4px rgba(0,0,0,.15);
+}
+
+@media (max-width: 768px) {
+  .hero-bg {
+    min-height: 280px;
+  }
+  
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+  
+  .hero-content p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-bg {
+    min-height: 220px;
+  }
+  
+  .hero-content h1 {
+    font-size: 1.5rem;
+  }
+  
+  .hero-content p {
+    font-size: 0.9rem;
+  }
 }
 
 /* =========================
